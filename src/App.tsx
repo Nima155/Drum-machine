@@ -1,77 +1,80 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./App.css";
-import { Container, Grid, Button } from "@material-ui/core";
-import { useSpring, animated, config } from "react-spring";
+import { Container, Grid, Slider } from "@material-ui/core";
+
+import { ToggleMaster } from "./components/toggleMaster";
+import AudioButton from "./components/buttons";
 
 function App() {
 	// create all buttons
-	const buttons: any[] = [];
-	for (let i = 0; i < 9; i++) {
-		buttons.push(
-			<Grid item container xs={4} key={i} style={{ padding: "10px" }}>
-				<Button variant="contained" style={{ height: "70px", width: "70px" }}>
-					A
-				</Button>
-			</Grid>
-		);
-	}
-	const [toggle, setToggle] = useState(false);
-	const toggleStyle = useSpring({
-		transform: toggle ? "translateX(20px)" : "translateX(0px)",
-	});
+	const buttons: string = "QWEASDZXC";
+
+	// power and mode toggles
+	const [powerToggle, setToggle1] = useState(false);
+	const [bankToggle, setToggle2] = useState(false);
+
+	// will need to change this to pass props such as sound to play and character to render inside button
+
 	return (
 		<div className="App">
 			<Container
-				maxWidth="md"
+				maxWidth="xl"
 				style={{
-					backgroundColor: "blue",
+					backgroundColor: "#00203FFF",
 					height: "100vh",
 					display: "flex",
+					justifyContent: "center",
 				}}
 			>
 				<Grid
 					container
 					style={{
-						backgroundColor: "gray",
+						backgroundColor: "#ADEFD15F",
 						maxWidth: "500px",
-						margin: "auto",
+						margin: "auto 12px",
+						borderRadius: "12px",
 					}}
-					spacing={1}
 				>
-					<Grid container item xs={12} md={6}>
-						{buttons}
+					<Grid container item xs={12} sm={6}>
+						{buttons.split("").map<JSX.Element>((value, index) => {
+							return <AudioButton soundUrl="" i={index} buttonText={value} />;
+						})}
 					</Grid>
 					<Grid
 						container
 						item
 						xs={12}
-						md={6}
-						direction="column"
-						spacing={1}
+						sm={6}
 						style={{ padding: "10px" }}
+						alignItems="center"
+						justify="center"
 					>
 						<Grid
 							item
-							container
-							xs={6}
-							style={{ margin: "auto" }}
-							justify="center"
+							xs={8}
+							style={{
+								backgroundColor: "#00203FFF",
+								textAlign: "center",
+								color: "white",
+								borderRadius: "5px",
+							}}
 						>
-							<div
-								style={{ backgroundColor: "red", width: "40px" }}
-								onClick={() => setToggle(!toggle)}
-							>
-								<animated.div
-									style={{
-										backgroundColor: "green",
-										width: "20px",
-										...toggleStyle,
-									}}
-								>
-									H
-								</animated.div>
-							</div>
+							<p>Hi</p>
 						</Grid>
+						<Grid item xs={9} justify="center">
+							<Slider aria-label="Volume"></Slider>
+						</Grid>
+
+						<ToggleMaster
+							onClick={() => setToggle1((state) => !state)}
+							toggle={powerToggle}
+							title="Power"
+						/>
+						<ToggleMaster
+							onClick={() => setToggle2((state) => !state)}
+							toggle={bankToggle}
+							title="Bank"
+						/>
 					</Grid>
 				</Grid>
 			</Container>
