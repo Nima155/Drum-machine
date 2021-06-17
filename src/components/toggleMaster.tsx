@@ -8,7 +8,7 @@ export function ToggleMaster(props: IToggleProps): any {
 	});
 	return (
 		<Grid item container xs={6} direction="column" alignItems="center">
-			<h3 style={{ color: "#FFFFFFC1" }}>{props.title}</h3>
+			<h5 style={{ color: "#FFFFFFC1" }}>{props.title}</h5>
 			<div
 				style={{ backgroundColor: "#00203FFF", width: "40px", padding: "2px" }}
 				onClick={props.onClick}
@@ -33,7 +33,7 @@ export function ToggleMaster(props: IToggleProps): any {
 							fontSize: "10px",
 						}}
 					>
-						OFF
+						<p>OFF</p>
 					</Grid>
 					<Grid item xs={6} style={{ fontSize: "12px", textAlign: "center" }}>
 						On

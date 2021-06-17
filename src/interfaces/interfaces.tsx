@@ -4,7 +4,6 @@ export interface IToggleProps {
 	title: string;
 }
 export interface IButtonInterface {
-	soundUrl: string;
+	soundEle: HTMLAudioElement;
 	buttonText: string;
-	i: number;
 }
