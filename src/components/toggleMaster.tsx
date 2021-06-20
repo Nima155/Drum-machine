@@ -25,6 +25,7 @@ export function ToggleMaster(props: IToggleProps): any {
 					alignItems="center"
 				>
 					<Grid
+						container
 						item
 						xs={6}
 						style={{
@@ -32,6 +33,7 @@ export function ToggleMaster(props: IToggleProps): any {
 							height: "1rem",
 							fontSize: "10px",
 						}}
+						alignItems="center"
 					>
 						<p>OFF</p>
 					</Grid>

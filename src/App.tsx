@@ -1,12 +1,14 @@
 import { useState, useEffect, useMemo } from "react";
 import "./App.css";
-import { Container, Grid, Slider, makeStyles, Paper } from "@material-ui/core";
+import { Container, Grid, Slider, makeStyles, AppBar } from "@material-ui/core";
 import VolumeUpIcon from "@material-ui/icons/VolumeUp";
 import VolumeDownIcon from "@material-ui/icons/VolumeDown";
 import { ToggleMaster } from "./components/toggleMaster";
 import AudioButton from "./components/buttons";
 import { SOUND_PAIRINGS, SOUND_NAMES } from "./constants";
 import { animated, config, useSpring } from "react-spring";
+import { StyledTab } from "./components/styledTab";
+import { StyledTabs } from "./components/styledTabs";
 
 const useSliderStyle = makeStyles({
 	root: {
@@ -25,15 +27,7 @@ const useSliderStyle = makeStyles({
 		color: "black",
 	},
 });
-// let audio = new Audio(props.soundUrl);
-// 	audio.volume = 1;
-// 	audio.addEventListener("keydown", (e) => {
-// 		const key = e.key;
-// 		console.log(key);
-// 		if (key.toUpperCase() == props.buttonText) {
-// 			audio.play();
-// 		}
-// 	});
+
 const BUTTON_LAYOUT: string = "QWEASDZXC";
 
 function App() {
@@ -45,6 +39,11 @@ function App() {
 	const [bankToggle, setToggle2] = useState(false);
 	const [textInBox, setTextInBox] = useState("");
 
+	const [selectedTab, setSelectedTab] = useState(0);
+
+	const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
+		setSelectedTab(newValue);
+	};
 	const arr: HTMLAudioElement[] = useMemo(() => {
 		const audioArr = [];
 		for (let i = 0; i < 9; i++) {
@@ -58,6 +57,7 @@ function App() {
 	// add color props ??
 	useEffect(() => {
 		const changer = (e: any) => {
+			if (powerToggle) return;
 			const indx = BUTTON_LAYOUT.indexOf(e.key.toUpperCase());
 			if (indx != -1) {
 				setTextInBox(SOUND_NAMES[indx][+bankToggle]);
@@ -71,7 +71,7 @@ function App() {
 		};
 		window.addEventListener("keydown", changer);
 		return () => window.removeEventListener("keydown", changer);
-	}, [bankToggle, volume]);
+	}, [bankToggle, volume, powerToggle]);
 
 	const textInBoxAnimation = useSpring({
 		from: { color: "#FFFFFF00" },
@@ -80,7 +80,6 @@ function App() {
 		reset: true,
 	});
 
-	// will need to change this to pass props such as sound to play and character to render inside button
 	const sliderClasses = useSliderStyle();
 	return (
 		<div className="App">
@@ -99,97 +98,139 @@ function App() {
 						backgroundColor: "#ADEFD15F",
 						maxWidth: "500px",
 						margin: "auto 12px",
-						border: "2px solid #FFFFFFA5",
-						borderRadius: "12px",
+						border: "1px solid #FFFFFFA5",
+						// borderRadius: "12px 0px 0px 12px",
 					}}
 				>
-					<Grid container item xs={12} sm={6}>
-						{SOUND_PAIRINGS.map<JSX.Element>((value, index) => {
-							return (
-								<AudioButton
-									soundEle={arr[index]}
-									key={index}
-									buttonText={value[0]}
-								/>
-							);
-						})}
-					</Grid>
-
-					<Grid
-						container
-						item
-						xs={12}
-						sm={6}
-						style={{ padding: "10px" }}
-						alignItems="center"
-						justify="center"
+					<AppBar
+						position="static"
+						color="transparent"
+						style={{ color: "#D5D5D5" }}
 					>
-						<Grid
-							container
-							item
-							xs={8}
-							style={{
-								backgroundColor: "#00203FFF",
-								textAlign: "center",
-								color: "white",
-								borderRadius: "5px",
-								height: "2rem",
-							}}
-							justify="center"
-							alignItems="center"
+						<StyledTabs
+							value={selectedTab}
+							onChange={handleChange}
+							aria-label="simple tabs example"
 						>
-							<animated.p style={textInBoxAnimation}>{textInBox}</animated.p>
-						</Grid>
-						<Grid
-							item
-							container
-							xs={12}
-							justify="center"
-							spacing={2}
-							alignItems="center"
-						>
-							<VolumeDownIcon />
-
-							<Grid item xs={7}>
-								<Slider
-									aria-label="Volume"
-									classes={{
-										thumb: sliderClasses.thumb,
-										rail: sliderClasses.rail,
-										track: sliderClasses.track,
-										valueLabel: sliderClasses.valueLabel,
-										root: sliderClasses.root,
-									}}
-									valueLabelDisplay="auto"
-									onChangeCommitted={(e, value: number | number[]) => {
-										if (typeof value == "number") {
-											setVolume(value);
-										}
-									}}
-									onChange={(e, value: number | number[]) => {
-										if (typeof value == "number")
-											setTextInBox(`Volume: ${value}`);
-									}}
-								/>
+							<StyledTab label="App" />
+							<StyledTab label="Info" />
+						</StyledTabs>
+					</AppBar>
+					{selectedTab === 0 && (
+						<>
+							<Grid container item xs={12} sm={6}>
+								{SOUND_PAIRINGS.map<JSX.Element>((value, index) => {
+									return (
+										<AudioButton
+											soundEle={arr[index]}
+											key={index}
+											buttonText={value[0]}
+											onClick={() =>
+												setTextInBox(SOUND_NAMES[index][+bankToggle])
+											}
+											powerState={powerToggle}
+										/>
+									);
+								})}
 							</Grid>
 
-							<VolumeUpIcon />
-						</Grid>
+							<Grid
+								container
+								item
+								xs={12}
+								sm={6}
+								style={{ padding: "10px" }}
+								alignItems="center"
+								justify="center"
+							>
+								<Grid
+									container
+									item
+									xs={8}
+									style={{
+										backgroundColor: "#00203FFF",
+										textAlign: "center",
+										color: "white",
+										borderRadius: "5px",
+										height: "2rem",
+									}}
+									justify="center"
+									alignItems="center"
+								>
+									<animated.p style={textInBoxAnimation}>
+										{textInBox}
+									</animated.p>
+								</Grid>
+								<Grid
+									item
+									container
+									xs={12}
+									justify="center"
+									spacing={2}
+									alignItems="center"
+								>
+									<VolumeDownIcon />
 
-						<ToggleMaster
-							onClick={() => setToggle1((state) => !state)}
-							toggle={powerToggle}
-							title="Power"
-						/>
-						<ToggleMaster
-							onClick={() => {
-								setToggle2((state) => !state);
-								setTextInBox(bankToggle ? "Heater Kit" : "Smooth Piano Kit");
-							}}
-							toggle={bankToggle}
-							title="Bank"
-						/>
-					</Grid>
+									<Grid item xs={7}>
+										<Slider
+											aria-label="Volume"
+											classes={{
+												thumb: sliderClasses.thumb,
+												rail: sliderClasses.rail,
+												track: sliderClasses.track,
+												valueLabel: sliderClasses.valueLabel,
+												root: sliderClasses.root,
+											}}
+											valueLabelDisplay="auto"
+											onChangeCommitted={(e, value: number | number[]) => {
+												if (typeof value == "number") {
+													setVolume(value);
+												}
+											}}
+											onChange={(e, value: number | number[]) => {
+												if (typeof value == "number")
+													setTextInBox(`Volume: ${value}`);
+											}}
+										/>
+									</Grid>
+
+									<VolumeUpIcon />
+								</Grid>
+
+								<ToggleMaster
+									onClick={() => setToggle1((state) => !state)}
+									toggle={powerToggle}
+									title="Power"
+								/>
+								<ToggleMaster
+									onClick={() => {
+										setToggle2((state) => !state);
+										setTextInBox(
+											bankToggle ? "Heater Kit" : "Smooth Piano Kit"
+										);
+									}}
+									toggle={bankToggle}
+									title="Bank"
+								/>
+							</Grid>
+						</>
+					)}
+					{selectedTab === 1 && (
+						<Grid
+							container
+							item
+							xs={12}
+							justify="center"
+							alignItems="center"
+							style={{ padding: "10px", color: "#D5D5D5", textAlign: "center" }}
+						>
+							<p>
+								You can either press the <em>keys</em> shown on the screen to
+								trigger sounds or click on the buttons directly.
+							</p>
+						</Grid>
+						// {}
+					)}
 				</Grid>
 			</Container>
 		</div>

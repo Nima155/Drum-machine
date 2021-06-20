@@ -1,5 +1,6 @@
 import { IButtonInterface } from "../interfaces/interfaces";
 import { Grid, Button } from "@material-ui/core";
+
 const changer = (sound: HTMLAudioElement) => {
 	if (sound.paused) {
 		sound.play();
@@ -27,8 +28,11 @@ function AudioButton(props: IButtonInterface) {
 					backgroundColor: "#00203FA2",
 					color: "white",
 				}}
-				onClick={() => {
-					changer(props.soundEle);
+				onClick={(e) => {
+					if (!props.powerState) {
+						props.onClick(e);
+						changer(props.soundEle);
+					}
 				}}
 			>
 				{props.buttonText}
